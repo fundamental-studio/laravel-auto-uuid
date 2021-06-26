@@ -8,8 +8,21 @@
     {
         public function setHashAttribute()
         {
-            $uuid = (config('uuid_version')) ? Uuid::uuid1()->toString() : Uuid::uuid4()->toString();
+            $field = config('uuid_field');
+            $version = (config('uuid_version') and config('uuid_version') == 1) ? '1' : '4';
 
-            $this->attributes[config('uuid_field')] = $uuid;
+            if (property_exists($this, 'uuidVersion')) {
+                if (in_array($this->uuidVersion, ['1', '4'])) {
+                    $version = $this->uuidVersion;
+                }
+            }
+
+            if (property_exists($this, 'uuidField')) {
+                $field = $this->uuidField;
+            }
+
+            $uuid = ($version == '1') ? Uuid::uuid1()->toString() : Uuid::uuid4()->toString();
+
+            $this->attributes[$field] = $uuid;
         }
     }
